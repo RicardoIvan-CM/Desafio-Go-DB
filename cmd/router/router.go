@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/bootcamp-go/desafio-cierre-db.git/cmd/handler"
+	"github.com/bootcamp-go/desafio-cierre-db.git/internal/challenges"
 	"github.com/bootcamp-go/desafio-cierre-db.git/internal/customers"
 	"github.com/bootcamp-go/desafio-cierre-db.git/internal/invoices"
 	"github.com/bootcamp-go/desafio-cierre-db.git/internal/products"
@@ -30,6 +31,21 @@ func (r *router) MapRoutes() {
 	r.buildInvoicesRoutes()
 	r.buildProductsRoutes()
 	r.buildSalesRoutes()
+	r.buildChanllengeRoutes()
+}
+
+func (r *router) buildChanllengeRoutes() {
+
+	repo := challenges.NewRepository(r.db)
+	service := challenges.NewService(repo)
+	handler := handler.NewHandlerChallenges(service)
+
+	c := r.rg.Group("/challenges")
+	{
+		c.GET("totalsByCustomerCondition", handler.GetTotalsByCustomerCondition())
+		c.GET("topSoldProducts", handler.GetTopSoldProducts())
+		c.GET("topActiveCustomerSpent", handler.GetTopActiveCustomersSpent())
+	}
 }
 
 func (r *router) buildCustomersRoutes() {
